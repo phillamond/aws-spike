@@ -45,4 +45,4 @@ Feature: Email notification service
     }
     """
     Then the list of email subscribers are sent and email
-    And the email body contains "There is new content by artist Pink Floyd"
+    And the email body will contain "There is new content by artist Pink Floyd"

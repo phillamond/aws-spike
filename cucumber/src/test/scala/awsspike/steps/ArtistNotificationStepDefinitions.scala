@@ -55,7 +55,7 @@ class ArtistNotificationStepDefinitions extends ScalaDsl with EN {
     
   }
 
-  Then("""^the email body contains "([^"]*)"$"""){ (bodyText:String) =>
+  Then("""^the email body will contain "([^"]*)"$"""){ (bodyText:String) =>
     // pick out the message on the queue that will be used in the email body
     assert(messageContent.equals("There is new content by artist Pink Floyd"))
   }
