@@ -1,6 +1,6 @@
 Feature: Email notification service
   As an end user
-  In order to listen to my favourite artists
+  In order to listen to new music by my favourite artists
   I need to be notified when they release a new track
 
   Scenario: User subscription to email notification service
