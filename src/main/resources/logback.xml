@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration debug="false">
+
+    <appender name="Application" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>%d %-5p %m [%file:%method:%line]%n %t</pattern>
+        </encoder>
+        <file>${SERVER_LOG_LOCATION}/email-notifier.log</file>
+         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${SERVER_LOG_LOCATION}/%d{yyyy-MM-dd}-email-notifier.log</FileNamePattern>
+            <MaxHistory>7</MaxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <!-- console -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%-5level [%-30file : %3line] %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="awsspike">
+        <level value="DEBUG" />
+        <appender-ref ref="Application"/>
+    </logger>
+
+    <logger name="org.springframework">
+        <level value="ERROR" />
+        <appender-ref ref="Application"/>
+    </logger>
+
+    <logger name="play">
+        <leve value="DEBUG"/>
+        <appender-ref ref="Application"/>
+    </logger>
+
+    <logger name="com.amazonaws" >
+        <level value="INFO" />
+        <appender-ref ref="Application"/>
+    </logger>
+
+</configuration>
+

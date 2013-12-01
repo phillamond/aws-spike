@@ -24,15 +24,20 @@ class ArtistNotificationStepDefinitions extends ScalaDsl with EN {
   }
 
   When("""^a notification is POSTed to "([^"]*)" with input body$"""){ (path:String, input:String) =>
-    val httpPost = new HttpPost(Environment.baseUrl + "/status")
+    val httpPost = new HttpPost(Environment.baseUrl + path)
     val httpEntity = new BasicHttpEntity
     httpEntity.setContentType(new BasicHeader("Content-type","application/json"))
     httpEntity.setContent(new ByteArrayInputStream(input.getBytes))
     httpPost.setEntity(httpEntity)
-    response = client.execute(httpPost)
+    try {
+      response = client.execute(httpPost)
+      assert(response.getStatusLine.getStatusCode.equals(201))
+    } finally {
+      response.getEntity.getContent.close()
+    }
   }
 
-  Then("""^the list of email subscribers are sent and email$"""){ () =>
+  Then("""^the list of email subscribers are sent an email$"""){ () =>
     val sqs = new AmazonSQSClient()
     sqs.setEndpoint("sqs.eu-west-1.amazonaws.com")
     val queueName = Environment.sqsQueueName
@@ -43,7 +48,7 @@ class ArtistNotificationStepDefinitions extends ScalaDsl with EN {
       .withMaxNumberOfMessages(5)
     ).getMessages.toList
 
-    // there should only be one message
+    // TODO obtain the correct message using Subject field with a UUID or something
     for (message <- messages) {
       val json: JSONObject = new JSONObject(message.getBody)
       try {

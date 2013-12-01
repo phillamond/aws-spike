@@ -1,0 +1,24 @@
+{
+    "type": "Catalogue",
+    "occurred": "2013-11-18T21:33:55.373Z",
+    "message": {
+        "method": "UpdateArtist",
+        "params": {
+            "artistId": "test:b12a908e7e224f6892fee6a8210b7d02",
+            "tid": "acdc73c9c8da4351ba54ebc28d843484",
+            "artist": {
+                "artistId": "test:b12a908e7e224f6892fee6a8210b7d02",
+                "imageUrl": "http://artcdn.ribob01.net/images/3ad4",
+                "artistName": "Pink Floyd",
+                "localArtistNames": [
+                    {
+                        "language": "EN",
+                        "script": "latin",
+                        "country": "GB",
+                        "value": "Pink Floyd"
+                    }
+                ]
+            }
+        }
+    }
+}

@@ -7,7 +7,7 @@ import scala.collection.JavaConverters._
 
 object Environment {
   val sqsQueueName = "ArtistTrackListenerQueue"
-  val baseUrl = resolveBaseUrl
+  val baseUrl = resolveHostname + "/emailnotifier"
   init()
 
   private def init() {
@@ -16,7 +16,7 @@ object Environment {
     propertySet.foreach(p => System.setProperty(p, environmentProperties.getProperty(p)))
   }
 
-  def resolveBaseUrl: String = {
+  def resolveHostname: String = {
     val targetEnv = System.getProperty("env", "dev")
     if (targetEnv.equals("aws")) return "ec2url"
     "http://localhost:8080"

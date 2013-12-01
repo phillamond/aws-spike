@@ -17,7 +17,7 @@ Feature: Email notification service
   Scenario: Update of artist profile with a new track
     Given a running artist email notification ReST service
     When Pink Floyd release a new track
-    And a notification is POSTed to "/events/test:b12a908e7e224f6892fee6a8210b7d02" with input body
+    And a notification is POSTed to "/artist/update" with input body
     """
     {
         "type": "Catalogue",
@@ -44,5 +44,5 @@ Feature: Email notification service
         }
     }
     """
-    Then the list of email subscribers are sent and email
+    Then the list of email subscribers are sent an email
     And the email body will contain "There is new content by artist Pink Floyd"

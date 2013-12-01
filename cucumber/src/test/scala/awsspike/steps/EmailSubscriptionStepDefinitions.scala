@@ -14,18 +14,27 @@ class EmailSubscriptionStepDefinitions extends ScalaDsl with EN {
   var response: HttpResponse = null
 
   Given("""^a running artist email notification ReST service$"""){ () =>
-    // hit ping/status endpoint
-    response = client.execute(new HttpGet(Environment.baseUrl + "/status"))
+    // hit /status endpoint
+    try {
+      response = client.execute(new HttpGet(Environment.baseUrl + "/status"))
+    } finally {
+      response.getEntity.getContent.close()
+    }
     assert(response.getStatusLine.getStatusCode.equals(200))
   }
 
   When("""^I make a PUT request to "([^"]*)" with input body$"""){ (path:String, input:String) =>
-    val httpPut = new HttpPut(Environment.baseUrl + "/status")
+    val httpPut = new HttpPut(Environment.baseUrl + path)
     val httpEntity = new BasicHttpEntity
     httpEntity.setContentType(new BasicHeader("Content-type","application/json"))
     httpEntity.setContent(new ByteArrayInputStream(input.getBytes))
     httpPut.setEntity(httpEntity)
-    response = client.execute(httpPut)
+    try {
+      response = client.execute(httpPut)
+      assert(response.getStatusLine.getStatusCode.equals(201))
+    } finally {
+      response.getEntity.getContent.close()
+    }
   }
 
   Then("""^I should be returned a response status of "([^"]*)"$"""){ (status:String) =>
