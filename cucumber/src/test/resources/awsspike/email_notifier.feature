@@ -5,14 +5,15 @@ Feature: Email notification service
 
   Scenario: User subscription to email notification service
     Given a running artist email notification ReST service
-    When I make a PUT request to "/subscribe" with input body
+    When I make a PUT request to "/user/subscribe" with input body
     """
     {
       "userEmailAddress": "joebloggs@sonyentertainment.com",
+      "userName": "Joe Bloggs",
       "artistId": "test:b12a908e7e224f6892fee6a8210b7d02"
     }
     """
-    Then I should be returned a response status of "201 Created"
+    Then I should be returned a response status code of 201
 
   Scenario: Update of artist profile with a new track
     Given a running artist email notification ReST service

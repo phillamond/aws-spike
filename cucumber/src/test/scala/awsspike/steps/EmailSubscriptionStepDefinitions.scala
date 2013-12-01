@@ -12,6 +12,7 @@ class EmailSubscriptionStepDefinitions extends ScalaDsl with EN {
 
   val client = Environment.httpClient
   var response: HttpResponse = null
+  var statusCode = 0
 
   Given("""^a running artist email notification ReST service$"""){ () =>
     // hit /status endpoint
@@ -31,14 +32,14 @@ class EmailSubscriptionStepDefinitions extends ScalaDsl with EN {
     httpPut.setEntity(httpEntity)
     try {
       response = client.execute(httpPut)
-      assert(response.getStatusLine.getStatusCode.equals(201))
+      statusCode = response.getStatusLine.getStatusCode
     } finally {
       response.getEntity.getContent.close()
     }
   }
 
-  Then("""^I should be returned a response status of "([^"]*)"$"""){ (status:String) =>
-    assert(response.getStatusLine.equals(status))
+  Then("""^I should be returned a response status code of (\d+)$"""){ (code:Int) =>
+    assert(statusCode.equals(code))
   }
 
 }

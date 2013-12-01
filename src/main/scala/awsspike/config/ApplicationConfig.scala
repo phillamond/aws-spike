@@ -16,6 +16,9 @@ import com.amazonaws.services.sqs.AmazonSQSClient
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClient
 import awsspike.artist.update.{ArtistTrackAPI, ArtistTrackService}
 import com.amazonaws.auth.PropertiesCredentials
+import awsspike.user.subscribe.{UserEmailSubscriptionService, UserEmailSubscribeAPI}
+import org.apache.cxf.jaxrs.provider.json.JSONProvider
+import javax.ws.rs.core.MediaType
 
 @Configuration
 @ComponentScan(basePackages = Array("awsspike"))
@@ -37,8 +40,20 @@ class ApplicationConfig extends Logging {
     val controllers = new util.ArrayList[Object]()
     controllers.add(new PingAPI)
     controllers.add(new ArtistTrackAPI(artistTrackService))
+    controllers.add(new UserEmailSubscribeAPI(userEmailSubscriptionService))
     factory.setServiceBeans(controllers)
+    val providers = new util.ArrayList[Object]()
+    val jsonProvider = new JSONProvider
+    jsonProvider.setDropRootElement(true)
+    jsonProvider.setSupportUnwrapped(true)
+    providers.add(jsonProvider)
+    factory.setProviders(providers)
     factory.create
+  }
+
+  @Bean
+  def userEmailSubscriptionService: UserEmailSubscriptionService = {
+    new UserEmailSubscriptionService(dynamoDBClient)
   }
 
   @Bean

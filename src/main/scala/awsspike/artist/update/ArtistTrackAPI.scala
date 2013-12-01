@@ -42,7 +42,7 @@ class ArtistTrackService(dynamoDBclient: AmazonDynamoDBClient, snsClient: Amazon
       "artistName" -> new AttributeValue(track.artistName)
     )
     val putItemRequest = new PutItemRequest()
-      .withTableName("ArtistTracks")
+      .withTableName(ArtistTrackService.dynamoDbTableName)
       .withItem(mapAsJavaMap[String,AttributeValue](item))
     dynamoDBclient.putItem(putItemRequest)
   }
@@ -60,6 +60,7 @@ class ArtistTrackService(dynamoDBclient: AmazonDynamoDBClient, snsClient: Amazon
 }
 
 object ArtistTrackService {
+  val dynamoDbTableName = "ArtistTracks"
   val snsTopicArn = "arn:aws:sns:eu-west-1:308864483436:ArtistTrackNotify"
   def snsMessage(artistName: String) = {
     s"There is new content by artist $artistName"

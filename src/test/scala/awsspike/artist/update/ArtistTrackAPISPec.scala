@@ -9,8 +9,9 @@ import org.mockito.Matchers.any
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient
 import com.amazonaws.services.sns.AmazonSNSClient
 import com.amazonaws.services.dynamodbv2.model.{PutItemResult, PutItemRequest}
-import com.amazonaws.services.sns.model.PublishRequest
+import com.amazonaws.services.sns.model.{PublishResult, PublishRequest}
 import org.mockito.{ArgumentCaptor, BDDMockito, Matchers}
+import awsspike.helper.FileHelper
 
 @RunWith(classOf[JUnitRunner])
 class ArtistTrackAPISPec extends FunSpec with GivenWhenThen with MockitoSugar {
@@ -23,7 +24,7 @@ class ArtistTrackAPISPec extends FunSpec with GivenWhenThen with MockitoSugar {
       val artistTrackAPI = new ArtistTrackAPI(artistTrackService)
 
       When("a new track is added")
-      artistTrackAPI.addTrack(readFile("/newTrack.json"))
+      artistTrackAPI.addTrack(FileHelper.readFile("/newTrack.json"))
 
       Then("the new track is persisted in the data store")
       verify(artistTrackService, times(1)).persistTrack(any(classOf[Track]))
@@ -56,15 +57,16 @@ class ArtistTrackAPISPec extends FunSpec with GivenWhenThen with MockitoSugar {
 
     it("publishes the track info on to the SNS topic") {
       Given("a configured instance of an ArtistTrackService")
+      val publishResult = new PublishResult()
+      BDDMockito.given(snsClient.publish(Matchers.any[PublishRequest])).willReturn(publishResult)
+      val publishRequestCapture = ArgumentCaptor.forClass(classOf[PublishRequest])
+
       When("the track metadata is published as an SNS topic event")
       artistTrackService.publishTrackEvent(track)
 
       Then("the SNS client publishes the new track event")
-      verify(snsClient, times(1)).publish(any(classOf[PublishRequest]))
+      verify(snsClient, times(1)).publish(publishRequestCapture.capture())
     }
   }
 
-  private def readFile(filepath: String): String = {
-    io.Source.fromInputStream(getClass.getResourceAsStream(filepath)).mkString
-  }
 }
