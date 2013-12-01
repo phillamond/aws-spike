@@ -15,11 +15,16 @@ import com.amazonaws.services.sns.AmazonSNSClient
 import com.amazonaws.services.sqs.AmazonSQSClient
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClient
 import awsspike.artist.update.{ArtistTrackAPI, ArtistTrackService}
+import com.amazonaws.auth.PropertiesCredentials
 
 @Configuration
 @ComponentScan(basePackages = Array("awsspike"))
 @Configurable
 class ApplicationConfig extends Logging {
+
+  val credentials = new PropertiesCredentials(
+    this.getClass.getResourceAsStream("/AwsCredentials.properties")
+  )
 
   @Bean
   def cxf: SpringBus = {
@@ -43,15 +48,15 @@ class ApplicationConfig extends Logging {
 
   @Bean
   def dynamoDBClient: AmazonDynamoDBClient = {
-    val client: AmazonDynamoDBClient = new AmazonDynamoDBClient
-    client.setEndpoint("dynamodb.eu-west-1.amazonaws.com")
+    val client: AmazonDynamoDBClient = new AmazonDynamoDBClient(credentials)
+    client.setEndpoint("https://dynamodb.eu-west-1.amazonaws.com")
     client
   }
 
   @Bean
   def snsClient: AmazonSNSClient = {
-    val client: AmazonSNSClient = new AmazonSNSClient
-    client.setEndpoint("sns.eu-west-1.amazonaws.com")
+    val client: AmazonSNSClient = new AmazonSNSClient(credentials)
+    client.setEndpoint("https://sns.eu-west-1.amazonaws.com")
     client
   }
 

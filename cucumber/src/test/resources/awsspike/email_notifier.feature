@@ -44,5 +44,5 @@ Feature: Email notification service
         }
     }
     """
-    Then the list of email subscribers are sent an email
+    Then the list of email subscribers will be sent an email
     And the email body will contain "There is new content by artist Pink Floyd"
