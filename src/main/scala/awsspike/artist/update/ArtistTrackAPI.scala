@@ -34,27 +34,30 @@ class ArtistTrackAPI(artistTrackService: ArtistTrackService) extends Logging {
 }
 
 class ArtistTrackService(dynamoDBclient: AmazonDynamoDBClient, snsClient: AmazonSNSClient) extends Logging {
-  
+
   def persistTrack(track: Track) = {
-    val item = Map[String,AttributeValue](
+    val item = Map[String, AttributeValue](
       "trackId" -> new AttributeValue(track.trackId),
       "artistId" -> new AttributeValue(track.artistId),
       "artistName" -> new AttributeValue(track.artistName)
     )
     val putItemRequest = new PutItemRequest()
       .withTableName(ArtistTrackService.dynamoDbTableName)
-      .withItem(mapAsJavaMap[String,AttributeValue](item))
+      .withItem(mapAsJavaMap[String, AttributeValue](item))
     dynamoDBclient.putItem(putItemRequest)
   }
 
+
   def publishTrackEvent(track: Track) = {
     val message = ArtistTrackService.snsMessage(track.artistName)
+    val subject = track.artistId
     logger.debug("Sending following event message to SNS topic: " + message)
+    logger.debug("With message subject field: " + subject)
     val publishRequest = new PublishRequest(
-      ArtistTrackService.snsTopicArn, message
+      ArtistTrackService.snsTopicArn, message, subject
     )
     snsClient.publish(publishRequest)
-    logger.debug("Sent message to SNS topic: " + publishRequest.getTopicArn())
+    logger.debug("Sent message to SNS topic: " + publishRequest.getTopicArn)
   }
 
 }
@@ -62,6 +65,7 @@ class ArtistTrackService(dynamoDBclient: AmazonDynamoDBClient, snsClient: Amazon
 object ArtistTrackService {
   val dynamoDbTableName = "ArtistTracks"
   val snsTopicArn = "arn:aws:sns:eu-west-1:308864483436:ArtistTrackNotify"
+
   def snsMessage(artistName: String) = {
     s"There is new content by artist $artistName"
   }

@@ -18,11 +18,12 @@ import awsspike.artist.update.{ArtistTrackAPI, ArtistTrackService}
 import com.amazonaws.auth.PropertiesCredentials
 import awsspike.user.subscribe.{UserEmailSubscriptionService, UserEmailSubscribeAPI}
 import org.apache.cxf.jaxrs.provider.json.JSONProvider
-import javax.ws.rs.core.MediaType
+import org.springframework.scheduling.annotation.EnableScheduling
 
 @Configuration
 @ComponentScan(basePackages = Array("awsspike"))
 @Configurable
+@EnableScheduling
 class ApplicationConfig extends Logging {
 
   val credentials = new PropertiesCredentials(
@@ -77,13 +78,13 @@ class ApplicationConfig extends Logging {
 
   @Bean
   def sqsClient: AmazonSQSClient = {
-    val client: AmazonSQSClient = new AmazonSQSClient
-    client.setEndpoint("sqs.eu-west-1.amazonaws.com")
+    val client: AmazonSQSClient = new AmazonSQSClient(credentials)
+    client.setEndpoint("https://sqs.eu-west-1.amazonaws.com")
     client
   }
 
   @Bean
   def sesClient: AmazonSimpleEmailServiceClient = {
-    new AmazonSimpleEmailServiceClient
+    new AmazonSimpleEmailServiceClient(credentials)
   }
 }
